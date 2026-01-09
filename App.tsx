@@ -29,8 +29,13 @@ const App: React.FC = () => {
     setSettings(newSettings);
   };
 
+  const updateSettings = (updatedSettings: UserSettings) => {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(updatedSettings));
+    setSettings({ ...updatedSettings });
+  };
+
   const handleReset = () => {
-    if (window.confirm("Are you sure you want to erase your mission?")) {
+    if (window.confirm("CRITICAL: ERASE ALL NEURAL DATA? THIS CANNOT BE UNDONE.")) {
       localStorage.removeItem(STORAGE_KEY);
       localStorage.removeItem(ACTIVITY_KEY);
       setSettings(null);
@@ -50,7 +55,6 @@ const App: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-black text-white selection:bg-red-600 flex flex-col overflow-hidden">
-      {/* Custom Title Bar for Desktop Experience */}
       <TitleBar />
 
       <div className="flex-1 relative overflow-hidden">
@@ -62,11 +66,11 @@ const App: React.FC = () => {
             activities={activities} 
             onReset={handleReset}
             onLogActivity={logActivity}
+            onUpdateSettings={updateSettings}
           />
         )}
       </div>
       
-      {/* Decorative Mirror Grain */}
       <div className="fixed inset-0 pointer-events-none opacity-[0.03] bg-[url('https://grainy-gradients.vercel.app/noise.svg')] z-[200]"></div>
     </div>
   );

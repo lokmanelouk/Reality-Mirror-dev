@@ -175,7 +175,7 @@ export const Onboarding: React.FC<Props> = ({ onComplete }) => {
             <div className="animate-logs-scroll space-y-4">
               {Array.from({length: 60}).map((_, i) => (
                 <div key={i} className={`flex flex-col gap-1 transition-opacity duration-1000 ${i % 4 === 0 ? 'animate-terminal-flicker text-red-900/50' : ''}`}>
-                  <p className="truncate">>> LOG_CHUNK_ID: 0x{Math.random().toString(16).substr(2, 4).toUpperCase()}</p>
+                  <p className="truncate">{'>'}{'>'} LOG_CHUNK_ID: 0x{Math.random().toString(16).substr(2, 4).toUpperCase()}</p>
                   <p className="opacity-40 italic">-- STATUS_REF: {Math.random() > 0.5 ? 'NOMINAL' : 'DRIFT_DETECTED'}</p>
                 </div>
               ))}

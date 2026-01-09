@@ -1,5 +1,5 @@
 
-const { app, BrowserWindow } = require('electron');
+const { app, BrowserWindow, ipcMain } = require('electron');
 const path = require('path');
 
 function createWindow() {
@@ -12,15 +12,29 @@ function createWindow() {
     backgroundColor: '#000000',
     webPreferences: {
       nodeIntegration: true,
-      contextIsolation: false,
+      contextIsolation: false, // Allows window.require for simpler IPC in this context
     },
     titleBarStyle: 'hidden',
   });
 
   win.loadFile('index.html');
 
-  // Optional: Open DevTools in development
-  // win.webContents.openDevTools();
+  // Window management IPC listeners
+  ipcMain.on('window-minimize', () => {
+    win.minimize();
+  });
+
+  ipcMain.on('window-toggle-maximize', () => {
+    if (win.isMaximized()) {
+      win.unmaximize();
+    } else {
+      win.maximize();
+    }
+  });
+
+  ipcMain.on('window-close', () => {
+    win.close();
+  });
 }
 
 app.whenReady().then(() => {
