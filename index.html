@@ -14,6 +14,7 @@
       --slate: #111111;
       --glitch-red: rgba(255, 0, 0, 0.45);
       --glitch-cyan: rgba(0, 255, 255, 0.2);
+      --entropy-level: 0; /* 0 to 1 */
     }
     
     * {
@@ -36,7 +37,19 @@
     .font-mono {
       font-family: 'JetBrains Mono', monospace;
     }
+
+    /* Desktop Specific Classes */
+    .draggable { -webkit-app-region: drag; }
+    .no-drag { -webkit-app-region: no-drag; }
     
+    /* Dynamic Chromatic Aberration */
+    .aberration-active {
+      text-shadow: 
+        calc(var(--entropy-level) * 2px) 0 rgba(255,0,0,0.5),
+        calc(var(--entropy-level) * -2px) 0 rgba(0,255,255,0.5);
+      transition: text-shadow 0.3s ease;
+    }
+
     body::before {
       content: " ";
       display: block;
@@ -60,7 +73,7 @@
       width: 300%;
       height: 300%;
       background-image: url("https://grainy-gradients.vercel.app/noise.svg");
-      opacity: 0.015;
+      opacity: calc(0.015 + (var(--entropy-level) * 0.5)); /* Boosted for scarring effect */
       pointer-events: none;
       z-index: 1001;
       animation: noise 8s steps(10) infinite;
@@ -77,14 +90,57 @@
 
     @keyframes glitch-integrated {
       0% { transform: translate(0); text-shadow: none; opacity: 1; }
-      1% { transform: translate(-0.3px, 0); text-shadow: 0.4px 0 var(--glitch-red); }
-      2% { transform: translate(0.3px, 0); text-shadow: -0.4px 0 var(--glitch-cyan); }
+      1% { transform: translate(calc(var(--entropy-level) * -1px), 0); text-shadow: 0.4px 0 var(--glitch-red); }
+      2% { transform: translate(calc(var(--entropy-level) * 1px), 0); text-shadow: -0.4px 0 var(--glitch-cyan); }
       3% { transform: translate(0); text-shadow: none; }
       100% { transform: translate(0); text-shadow: none; }
     }
 
     .glitch-active {
       animation: glitch-integrated 0.8s infinite linear;
+    }
+
+    /* Digital Scarring Effects */
+    @keyframes ui-fragment {
+      0%, 100% { letter-spacing: normal; transform: skew(0deg); filter: blur(0); opacity: 1; }
+      10% { letter-spacing: -0.1em; transform: skew(1deg); filter: blur(0.5px); opacity: 0.8; }
+      20% { letter-spacing: 0.15em; transform: skew(-1deg); }
+      30% { letter-spacing: -0.05em; transform: translateX(-2px); }
+    }
+
+    .scarring-text {
+      animation: ui-fragment 0.3s infinite;
+      mix-blend-mode: exclusion;
+    }
+
+    @keyframes structural-jitter {
+      0%, 100% { transform: translate(0, 0); }
+      10% { transform: translate(-1px, 1px); }
+      20% { transform: translate(1px, -1px); }
+      30% { transform: translate(-1px, -1px); }
+      40% { transform: translate(1px, 1px); }
+    }
+
+    .scarring-jitter {
+      animation: structural-jitter 0.15s infinite;
+    }
+
+    .scarring-active {
+      filter: contrast(1.1) brightness(0.95) saturate(1.2);
+    }
+
+    @keyframes flicker-intense {
+      0%, 100% { opacity: 1; }
+      5% { opacity: 0.2; }
+      10% { opacity: 1; }
+      20% { opacity: 0.8; }
+      25% { opacity: 1; }
+      80% { opacity: 1; }
+      82% { opacity: 0.1; }
+      84% { opacity: 1; }
+    }
+    .animate-flicker-intense {
+      animation: flicker-intense 5s infinite;
     }
 
     @keyframes scan-v {
@@ -95,50 +151,12 @@
       animation: scan-v 4s linear infinite;
     }
 
-    /* Yoyo Bar Width Animation */
     @keyframes bar-yoyo {
-      0%, 100% { width: 0%; opacity: 0.1; }
-      50% { width: 100%; opacity: 1; }
+      0%, 100% { width: 5%; opacity: 0.1; }
+      50% { width: 95%; opacity: 0.8; }
     }
     .animate-bar-yoyo {
-      animation: bar-yoyo 3s ease-in-out infinite;
-    }
-
-    /* Terminal Flicker for System Logs */
-    @keyframes terminal-flicker {
-      0%, 100% { opacity: 1; transform: translateX(0); }
-      50% { opacity: 0.8; transform: translateX(1px); }
-      51% { opacity: 0.4; }
-      52% { opacity: 1; }
-    }
-    .animate-terminal-flicker {
-      animation: terminal-flicker 0.2s infinite;
-    }
-
-    @keyframes slide-up-logs {
-      from { transform: translateY(100%); }
-      to { transform: translateY(-100%); }
-    }
-    .animate-logs-scroll {
-      animation: slide-up-logs 15s linear infinite;
-    }
-
-    @keyframes matrix-fall {
-      0% { transform: translateY(-100%); opacity: 0; }
-      10% { opacity: 0.5; }
-      90% { opacity: 0.5; }
-      100% { transform: translateY(100%); opacity: 0; }
-    }
-    .char-rain {
-      position: absolute;
-      top: 0;
-      color: rgba(255, 0, 0, 0.15);
-      font-size: 10px;
-      line-height: 1;
-      white-space: nowrap;
-      pointer-events: none;
-      writing-mode: vertical-rl;
-      animation: matrix-fall linear infinite;
+      animation: bar-yoyo 8s ease-in-out infinite;
     }
 
     .custom-scrollbar::-webkit-scrollbar { 
@@ -153,12 +171,37 @@
       border-radius: 0;
     }
 
-    .text-title-responsive {
-      font-size: clamp(2rem, 5vw, 4.5rem);
+    /* Breach Overlay Keyframes */
+    @keyframes breach-flicker {
+      0%, 100% { opacity: 0; pointer-events: none; }
+      49% { opacity: 0; }
+      50% { opacity: 0.4; pointer-events: auto; }
+      51% { opacity: 0; }
+      95% { opacity: 0; }
+      96% { opacity: 0.2; }
+      97% { opacity: 0; }
     }
-    
-    .text-title-onboarding {
-      font-size: clamp(2.2rem, 6vw, 4.5rem);
+    .breach-overlay {
+      animation: breach-flicker 10s infinite;
+      background: linear-gradient(transparent, rgba(255, 0, 0, 0.2), transparent);
+    }
+
+    /* Neural Scarring Animations */
+    @keyframes scar-pulse {
+      0%, 100% { opacity: 0.4; filter: blur(1px); }
+      50% { opacity: 1; filter: blur(3px); }
+    }
+    .scar-bleeding {
+      animation: scar-pulse 2s infinite ease-in-out;
+    }
+
+    .jagged-scar {
+      clip-path: polygon(
+        0% 10%, 10% 30%, 20% 10%, 30% 50%, 40% 20%, 50% 80%, 
+        60% 30%, 70% 90%, 80% 40%, 90% 60%, 100% 20%,
+        100% 80%, 90% 70%, 80% 90%, 70% 50%, 60% 80%, 50% 20%,
+        40% 70%, 30% 10%, 20% 60%, 10% 20%, 0% 90%
+      );
     }
   </style>
 <script type="importmap">
@@ -174,7 +217,7 @@
 }
 </script>
 </head>
-<body>
+<body class="bg-black">
   <div id="root"></div>
 </body>
 </html>
